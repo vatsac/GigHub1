@@ -12,27 +12,23 @@ namespace GigHub.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Gig
+    public partial class Notification
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Gig()
+        public Notification()
         {
-            this.Attendances = new HashSet<Attendance>();
-            this.Notifications = new HashSet<Notification>();
+            this.UserNotifications = new HashSet<UserNotification>();
         }
     
-        public int ID { get; set; }
+        public int Id { get; set; }
         public System.DateTime DateTime { get; set; }
-        public string Venue { get; set; }
-        public string Artist_Id { get; set; }
-        public byte Genre_id { get; set; }
-        public Nullable<bool> IsCanceled { get; set; }
+        public int Type { get; set; }
+        public Nullable<System.DateTime> OriginalDateTime { get; set; }
+        public string OriginalVenue { get; set; }
+        public int Gig_Id { get; set; }
     
-        public virtual Genre Genre { get; set; }
-        public virtual AspNetUser AspNetUser { get; set; }
+        public virtual Gig Gig { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Attendance> Attendances { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Notification> Notifications { get; set; }
+        public virtual ICollection<UserNotification> UserNotifications { get; set; }
     }
 }

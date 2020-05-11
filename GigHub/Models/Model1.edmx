@@ -91,6 +91,26 @@
           <Property Name="Genre_id" Type="tinyint" Nullable="false" />
           <Property Name="IsCanceled" Type="bit" />
         </EntityType>
+        <EntityType Name="Notifications">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DateTime" Type="datetime" Nullable="false" />
+          <Property Name="Type" Type="int" Nullable="false" />
+          <Property Name="OriginalDateTime" Type="datetime" />
+          <Property Name="OriginalVenue" Type="nvarchar" MaxLength="255" />
+          <Property Name="Gig_Id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserNotifications">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="NotificationId" Type="int" Nullable="false" />
+          <Property Name="IsRead" Type="bit" Nullable="false" />
+        </EntityType>
         <Association Name="FK_Artist_Id">
           <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1" />
           <End Role="Gigs" Type="Self.Gigs" Multiplicity="*" />
@@ -195,6 +215,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="Fk_Gig_Id">
+          <End Role="Gigs" Type="Self.Gigs" Multiplicity="1" />
+          <End Role="Notifications" Type="Self.Notifications" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Gigs">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Notifications">
+              <PropertyRef Name="Gig_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="Fk_GigId">
           <End Role="Gigs" Type="Self.Gigs" Multiplicity="1" />
           <End Role="Attendances" Type="Self.Attendances" Multiplicity="*" />
@@ -204,6 +236,30 @@
             </Principal>
             <Dependent Role="Attendances">
               <PropertyRef Name="GigId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Fk_NotificationID">
+          <End Role="Notifications" Type="Self.Notifications" Multiplicity="1" />
+          <End Role="UserNotifications" Type="Self.UserNotifications" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Notifications">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserNotifications">
+              <PropertyRef Name="NotificationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Fk_User_Id">
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1" />
+          <End Role="UserNotifications" Type="Self.UserNotifications" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserNotifications">
+              <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -229,6 +285,8 @@
           <EntitySet Name="follow" EntityType="Self.follow" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Genres" EntityType="Self.Genres" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Gigs" EntityType="Self.Gigs" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Notifications" EntityType="Self.Notifications" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserNotifications" EntityType="Self.UserNotifications" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_Artist_Id" Association="Self.FK_Artist_Id">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="Gigs" EntitySet="Gigs" />
@@ -261,9 +319,21 @@
             <End Role="Genres" EntitySet="Genres" />
             <End Role="Gigs" EntitySet="Gigs" />
           </AssociationSet>
+          <AssociationSet Name="Fk_Gig_Id" Association="Self.Fk_Gig_Id">
+            <End Role="Gigs" EntitySet="Gigs" />
+            <End Role="Notifications" EntitySet="Notifications" />
+          </AssociationSet>
           <AssociationSet Name="Fk_GigId" Association="Self.Fk_GigId">
             <End Role="Gigs" EntitySet="Gigs" />
             <End Role="Attendances" EntitySet="Attendances" />
+          </AssociationSet>
+          <AssociationSet Name="Fk_NotificationID" Association="Self.Fk_NotificationID">
+            <End Role="Notifications" EntitySet="Notifications" />
+            <End Role="UserNotifications" EntitySet="UserNotifications" />
+          </AssociationSet>
+          <AssociationSet Name="Fk_User_Id" Association="Self.Fk_User_Id">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="UserNotifications" EntitySet="UserNotifications" />
           </AssociationSet>
           <AssociationSet Name="Fk_UserId" Association="Self.Fk_UserId">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
@@ -295,6 +365,7 @@
           <NavigationProperty Name="AspNetUser" Relationship="GigHubModel.FK_Artist_Id" FromRole="Gig" ToRole="AspNetUser" />
           <NavigationProperty Name="Attendances" Relationship="GigHubModel.Fk_GigId" FromRole="Gig" ToRole="Attendance" />
           <Property Name="IsCanceled" Type="Boolean" />
+          <NavigationProperty Name="Notifications" Relationship="GigHubModel.Fk_Gig_Id" FromRole="Gig" ToRole="Notification" />
         </EntityType>
         <Association Name="FK_Genre_id">
           <End Role="Genres" Type="Self.Genre" Multiplicity="1" />
@@ -353,6 +424,20 @@
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
             <End Role="follow" EntitySet="follows" />
           </AssociationSet>
+          <EntitySet Name="Notifications" EntityType="GigHubModel.Notification" />
+          <EntitySet Name="UserNotifications" EntityType="GigHubModel.UserNotification" />
+          <AssociationSet Name="Fk_User_Id" Association="GigHubModel.Fk_User_Id">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="UserNotification" EntitySet="UserNotifications" />
+          </AssociationSet>
+          <AssociationSet Name="Fk_Gig_Id" Association="GigHubModel.Fk_Gig_Id">
+            <End Role="Gig" EntitySet="Gigs" />
+            <End Role="Notification" EntitySet="Notifications" />
+          </AssociationSet>
+          <AssociationSet Name="Fk_NotificationID" Association="GigHubModel.Fk_NotificationID">
+            <End Role="Notification" EntitySet="Notifications" />
+            <End Role="UserNotification" EntitySet="UserNotifications" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="AspNetRole">
           <Key>
@@ -407,6 +492,7 @@
           <NavigationProperty Name="Attendances" Relationship="GigHubModel.Fk_AttendeeId" FromRole="AspNetUser" ToRole="Attendance" />
           <NavigationProperty Name="follows" Relationship="GigHubModel.Fk_ArtistId" FromRole="AspNetUser" ToRole="follow" />
           <NavigationProperty Name="follows1" Relationship="GigHubModel.Fk_UserId" FromRole="AspNetUser" ToRole="follow" />
+          <NavigationProperty Name="UserNotifications" Relationship="GigHubModel.Fk_User_Id" FromRole="AspNetUser" ToRole="UserNotification" />
         </EntityType>
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
           <End Type="GigHubModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
@@ -520,6 +606,66 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Notification">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Type" Type="Int32" Nullable="false" />
+          <Property Name="OriginalDateTime" Type="DateTime" Precision="3" />
+          <Property Name="OriginalVenue" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Gig_Id" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Gig" Relationship="GigHubModel.Fk_Gig_Id" FromRole="Notification" ToRole="Gig" />
+          <NavigationProperty Name="UserNotifications" Relationship="GigHubModel.Fk_NotificationID" FromRole="Notification" ToRole="UserNotification" />
+        </EntityType>
+        <EntityType Name="UserNotification">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="NotificationId" Type="Int32" Nullable="false" />
+          <Property Name="IsRead" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="AspNetUser" Relationship="GigHubModel.Fk_User_Id" FromRole="UserNotification" ToRole="AspNetUser" />
+          <NavigationProperty Name="Notification" Relationship="GigHubModel.Fk_NotificationID" FromRole="UserNotification" ToRole="Notification" />
+        </EntityType>
+        <Association Name="Fk_User_Id">
+          <End Type="GigHubModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
+          <End Type="GigHubModel.UserNotification" Role="UserNotification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserNotification">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Fk_Gig_Id">
+          <End Type="GigHubModel.Gig" Role="Gig" Multiplicity="1" />
+          <End Type="GigHubModel.Notification" Role="Notification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Gig">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Notification">
+              <PropertyRef Name="Gig_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Fk_NotificationID">
+          <End Type="GigHubModel.Notification" Role="Notification" Multiplicity="1" />
+          <End Type="GigHubModel.UserNotification" Role="UserNotification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Notification">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserNotification">
+              <PropertyRef Name="NotificationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -615,6 +761,28 @@
                 <ScalarProperty Name="ArtistId" ColumnName="ArtistId" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Notifications">
+            <EntityTypeMapping TypeName="GigHubModel.Notification">
+              <MappingFragment StoreEntitySet="Notifications">
+                <ScalarProperty Name="Gig_Id" ColumnName="Gig_Id" />
+                <ScalarProperty Name="OriginalVenue" ColumnName="OriginalVenue" />
+                <ScalarProperty Name="OriginalDateTime" ColumnName="OriginalDateTime" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="DateTime" ColumnName="DateTime" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserNotifications">
+            <EntityTypeMapping TypeName="GigHubModel.UserNotification">
+              <MappingFragment StoreEntitySet="UserNotifications">
+                <ScalarProperty Name="IsRead" ColumnName="IsRead" />
+                <ScalarProperty Name="NotificationId" ColumnName="NotificationId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

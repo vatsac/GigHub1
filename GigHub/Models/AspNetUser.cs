@@ -24,6 +24,7 @@ namespace GigHub.Models
             this.Attendances = new HashSet<Attendance>();
             this.follows = new HashSet<follow>();
             this.follows1 = new HashSet<follow>();
+            this.UserNotifications = new HashSet<UserNotification>();
         }
     
         public string Id { get; set; }
@@ -54,5 +55,7 @@ namespace GigHub.Models
         public virtual ICollection<follow> follows { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<follow> follows1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<UserNotification> UserNotifications { get; set; }
     }
 }

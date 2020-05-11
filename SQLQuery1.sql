@@ -1,6 +1,7 @@
 Create table Genres(
 Id TinyInt not null primary key,
 Name nvarchar(255) not null)
+
 Insert into Genres Values(1,'Jazz'),(2,'Blues'),(3,'Rock'),(4,'Country')
 
 
@@ -14,11 +15,14 @@ Constraint FK_Artist_Id Foreign Key(Artist_Id)
 Genre_id tinyint not null
 Constraint FK_Genre_id Foreign Key(Genre_id)
  references Genres(Id))
+
  Alter table AspNetUsers
  Add  Name nvarchar(255) 
+
  update AspNetUsers
  set Name='James Morrison'
  where [Id]='227a6f53-d76b-4292-bd17-d5efc1ee397b'
+
  create table Attendances(
  Id int not null primary key identity,
  GigId int not null
@@ -28,6 +32,7 @@ Constraint FK_Genre_id Foreign Key(Genre_id)
  Constraint Fk_AttendeeId Foreign Key(AttendeeId)
  references AspNetUsers(Id)
  )
+
  create table follow(
  Id int not null primary key identity,
   UserId nvarchar(128)  not null
@@ -38,3 +43,25 @@ Constraint FK_Genre_id Foreign Key(Genre_id)
  references AspNetUsers(Id)
  )
  select * from follow
+
+ create table Notifications(
+ Id int not null primary key identity,
+ DateTime Datetime not null ,
+ Type int not null,
+ OriginalDateTime Datetime,
+ OriginalVenue nvarchar(255),
+ Gig_Id int not null
+ Constraint Fk_Gig_Id Foreign key(Gig_Id)
+ references Gigs(ID))
+
+ create table UserNotifications(
+ id int not null primary key identity,
+ UserId nvarchar(128)  not null
+ Constraint Fk_User_Id Foreign Key(UserId)
+ references AspNetUsers(Id),
+ NotificationId int not null
+ Constraint Fk_NotificationID Foreign Key(NotificationId)
+ references Notifications(Id),
+ IsRead bit not null default 'false')
+
+

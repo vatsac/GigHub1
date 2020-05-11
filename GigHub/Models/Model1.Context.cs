@@ -33,5 +33,7 @@ namespace GigHub.Models
         public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
         public virtual DbSet<Attendance> Attendances { get; set; }
         public virtual DbSet<follow> follows { get; set; }
+        public virtual DbSet<Notification> Notifications { get; set; }
+        public virtual DbSet<UserNotification> UserNotifications { get; set; }
     }
 }

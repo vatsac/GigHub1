@@ -51,6 +51,40 @@ namespace GigHub.Controllers
                 };
                 _context.Gigs.Add(gig);
                 _context.SaveChanges();
+                int gigid = (from record in _context.Gigs
+                             orderby record.ID descending
+                             select record.ID).First();
+                Notification notification = new Notification
+                {
+                    DateTime = DateTime.Now,
+                    Type = Convert.ToInt32(NotificationType.GigCreated),
+                    Gig_Id = gigid
+
+
+                };
+                _context.Notifications.Add(notification);
+                _context.SaveChanges();
+                var Notificationid = (from record in _context.Notifications
+                                      orderby record.Id descending
+                                      select record.Id).First();
+                var artistid = User.Identity.GetUserId();
+                var follower = _context.follows.Where(f => f.ArtistId == artistid).ToList();
+                foreach (var item in follower)
+
+                {
+                    UserNotification userNotification = new UserNotification
+                    {
+                        UserId = item.UserId,
+                        NotificationId = Notificationid
+
+                    };
+                    _context.UserNotifications.Add(userNotification);
+
+                }
+                _context.SaveChanges();
+
+
+
                 return RedirectToAction("Index", "Home");
             }
         }
@@ -104,6 +138,42 @@ namespace GigHub.Controllers
 
 
                 _context.SaveChanges();
+                Notification notification = new Notification
+                {
+                    DateTime = DateTime.Now,
+                    Type = Convert.ToInt32(NotificationType.GigUpdated),
+                    Gig_Id = gig.ID,
+                    OriginalDateTime = viewModel.GetDateTime(),
+                    OriginalVenue = viewModel.Venue
+
+
+                };
+                _context.Notifications.Add(notification);
+                _context.SaveChanges();
+                int Notificationid = (from record in _context.Notifications
+                                      orderby record.Id descending
+                                      select record.Id).First();
+                var attendeeid = (from s in _context.Attendances
+                                  where s.GigId == gig.ID
+                                  select s).ToList();
+                foreach (var item in attendeeid)
+                {
+                    UserNotification userNotification = new UserNotification
+                    {
+                        UserId = item.AttendeeId,
+                        NotificationId = Notificationid,
+
+
+
+                    };
+                    _context.UserNotifications.Add(userNotification);
+                }
+                _context.SaveChanges();
+
+
+
+
+
                 return RedirectToAction("Mine", "Gigs");
             }
         }
@@ -149,7 +219,7 @@ namespace GigHub.Controllers
             {
                 var userid = User.Identity.GetUserId();
                 var gigs = _context.follows.Include(f => f.AspNetUser1)
-                    .Where(f=>f.UserId==userid)
+                    .Where(f => f.UserId == userid)
                     .ToList();
                 return View(gigs);
             }

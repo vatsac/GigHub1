@@ -22,6 +22,11 @@
         <EntityTypeShape EntityType="GigHubModel.follow" Width="1.5" PointX="3" PointY="14.25" />
         <AssociationConnector Association="GigHubModel.Fk_ArtistId" />
         <AssociationConnector Association="GigHubModel.Fk_UserId" />
+        <EntityTypeShape EntityType="GigHubModel.Notification" Width="1.5" PointX="5.25" PointY="9.125" />
+        <EntityTypeShape EntityType="GigHubModel.UserNotification" Width="1.5" PointX="7.5" PointY="5.125" />
+        <AssociationConnector Association="GigHubModel.Fk_User_Id" />
+        <AssociationConnector Association="GigHubModel.Fk_Gig_Id" />
+        <AssociationConnector Association="GigHubModel.Fk_NotificationID" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
