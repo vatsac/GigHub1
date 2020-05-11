@@ -55,6 +55,23 @@
           <Property Name="LockoutEnabled" Type="bit" Nullable="false" />
           <Property Name="AccessFailedCount" Type="int" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="Attendances">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="GigId" Type="int" Nullable="false" />
+          <Property Name="AttendeeId" Type="nvarchar" MaxLength="128" Nullable="false" />
+        </EntityType>
+        <EntityType Name="follow">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="ArtistId" Type="nvarchar" MaxLength="128" Nullable="false" />
         </EntityType>
         <EntityType Name="Genres">
           <Key>
@@ -72,6 +89,7 @@
           <Property Name="Venue" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="Artist_Id" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="Genre_id" Type="tinyint" Nullable="false" />
+          <Property Name="IsCanceled" Type="bit" />
         </EntityType>
         <Association Name="FK_Artist_Id">
           <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1" />
@@ -82,6 +100,30 @@
             </Principal>
             <Dependent Role="Gigs">
               <PropertyRef Name="Artist_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Fk_ArtistId">
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1" />
+          <End Role="follow" Type="Self.follow" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="follow">
+              <PropertyRef Name="ArtistId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Fk_AttendeeId">
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1" />
+          <End Role="Attendances" Type="Self.Attendances" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Attendances">
+              <PropertyRef Name="AttendeeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -153,17 +195,51 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="Fk_GigId">
+          <End Role="Gigs" Type="Self.Gigs" Multiplicity="1" />
+          <End Role="Attendances" Type="Self.Attendances" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Gigs">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Attendances">
+              <PropertyRef Name="GigId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Fk_UserId">
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1" />
+          <End Role="follow" Type="Self.follow" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="follow">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="GigHubModelStoreContainer">
           <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserClaims" EntityType="Self.AspNetUserClaims" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserLogins" EntityType="Self.AspNetUserLogins" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserRoles" EntityType="Self.AspNetUserRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Attendances" EntityType="Self.Attendances" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="follow" EntityType="Self.follow" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Genres" EntityType="Self.Genres" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Gigs" EntityType="Self.Gigs" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_Artist_Id" Association="Self.FK_Artist_Id">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="Gigs" EntitySet="Gigs" />
+          </AssociationSet>
+          <AssociationSet Name="Fk_ArtistId" Association="Self.Fk_ArtistId">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="follow" EntitySet="follow" />
+          </AssociationSet>
+          <AssociationSet Name="Fk_AttendeeId" Association="Self.Fk_AttendeeId">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="Attendances" EntitySet="Attendances" />
           </AssociationSet>
           <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
@@ -184,6 +260,14 @@
           <AssociationSet Name="FK_Genre_id" Association="Self.FK_Genre_id">
             <End Role="Genres" EntitySet="Genres" />
             <End Role="Gigs" EntitySet="Gigs" />
+          </AssociationSet>
+          <AssociationSet Name="Fk_GigId" Association="Self.Fk_GigId">
+            <End Role="Gigs" EntitySet="Gigs" />
+            <End Role="Attendances" EntitySet="Attendances" />
+          </AssociationSet>
+          <AssociationSet Name="Fk_UserId" Association="Self.Fk_UserId">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="follow" EntitySet="follow" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -209,6 +293,8 @@
           <Property Name="Genre_id" Type="Byte" Nullable="false" />
           <NavigationProperty Name="Genre" Relationship="Self.FK_Genre_id" FromRole="Gigs" ToRole="Genres" />
           <NavigationProperty Name="AspNetUser" Relationship="GigHubModel.FK_Artist_Id" FromRole="Gig" ToRole="AspNetUser" />
+          <NavigationProperty Name="Attendances" Relationship="GigHubModel.Fk_GigId" FromRole="Gig" ToRole="Attendance" />
+          <Property Name="IsCanceled" Type="Boolean" />
         </EntityType>
         <Association Name="FK_Genre_id">
           <End Role="Genres" Type="Self.Genre" Multiplicity="1" />
@@ -248,6 +334,24 @@
           <AssociationSet Name="AspNetUserRoles" Association="GigHubModel.AspNetUserRoles">
             <End Role="AspNetRole" EntitySet="AspNetRoles" />
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
+          </AssociationSet>
+          <EntitySet Name="Attendances" EntityType="GigHubModel.Attendance" />
+          <AssociationSet Name="Fk_AttendeeId" Association="GigHubModel.Fk_AttendeeId">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="Attendance" EntitySet="Attendances" />
+          </AssociationSet>
+          <AssociationSet Name="Fk_GigId" Association="GigHubModel.Fk_GigId">
+            <End Role="Gig" EntitySet="Gigs" />
+            <End Role="Attendance" EntitySet="Attendances" />
+          </AssociationSet>
+          <EntitySet Name="follows" EntityType="GigHubModel.follow" />
+          <AssociationSet Name="Fk_ArtistId" Association="GigHubModel.Fk_ArtistId">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="follow" EntitySet="follows" />
+          </AssociationSet>
+          <AssociationSet Name="Fk_UserId" Association="GigHubModel.Fk_UserId">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="follow" EntitySet="follows" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="AspNetRole">
@@ -299,6 +403,10 @@
           <NavigationProperty Name="AspNetUserLogins" Relationship="GigHubModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUser" ToRole="AspNetUserLogin" />
           <NavigationProperty Name="Gigs" Relationship="GigHubModel.FK_Artist_Id" FromRole="AspNetUser" ToRole="Gig" />
           <NavigationProperty Name="AspNetRoles" Relationship="GigHubModel.AspNetUserRoles" FromRole="AspNetUser" ToRole="AspNetRole" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Attendances" Relationship="GigHubModel.Fk_AttendeeId" FromRole="AspNetUser" ToRole="Attendance" />
+          <NavigationProperty Name="follows" Relationship="GigHubModel.Fk_ArtistId" FromRole="AspNetUser" ToRole="follow" />
+          <NavigationProperty Name="follows1" Relationship="GigHubModel.Fk_UserId" FromRole="AspNetUser" ToRole="follow" />
         </EntityType>
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
           <End Type="GigHubModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
@@ -344,6 +452,74 @@
           <End Type="GigHubModel.AspNetRole" Role="AspNetRole" Multiplicity="*" />
           <End Type="GigHubModel.AspNetUser" Role="AspNetUser" Multiplicity="*" />
         </Association>
+        <EntityType Name="Attendance">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="GigId" Type="Int32" Nullable="false" />
+          <Property Name="AttendeeId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AspNetUser" Relationship="GigHubModel.Fk_AttendeeId" FromRole="Attendance" ToRole="AspNetUser" />
+          <NavigationProperty Name="Gig" Relationship="GigHubModel.Fk_GigId" FromRole="Attendance" ToRole="Gig" />
+        </EntityType>
+        <Association Name="Fk_AttendeeId">
+          <End Type="GigHubModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
+          <End Type="GigHubModel.Attendance" Role="Attendance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Attendance">
+              <PropertyRef Name="AttendeeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Fk_GigId">
+          <End Type="GigHubModel.Gig" Role="Gig" Multiplicity="1" />
+          <End Type="GigHubModel.Attendance" Role="Attendance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Gig">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Attendance">
+              <PropertyRef Name="GigId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="follow">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ArtistId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AspNetUser" Relationship="GigHubModel.Fk_ArtistId" FromRole="follow" ToRole="AspNetUser" />
+          <NavigationProperty Name="AspNetUser1" Relationship="GigHubModel.Fk_UserId" FromRole="follow" ToRole="AspNetUser" />
+        </EntityType>
+        <Association Name="Fk_ArtistId">
+          <End Type="GigHubModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
+          <End Type="GigHubModel.follow" Role="follow" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="follow">
+              <PropertyRef Name="ArtistId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Fk_UserId">
+          <End Type="GigHubModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
+          <End Type="GigHubModel.follow" Role="follow" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="follow">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -361,6 +537,7 @@
           <EntitySetMapping Name="Gigs">
             <EntityTypeMapping TypeName="GigHubModel.Gig">
               <MappingFragment StoreEntitySet="Gigs">
+                <ScalarProperty Name="IsCanceled" ColumnName="IsCanceled" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="DateTime" ColumnName="DateTime" />
                 <ScalarProperty Name="Venue" ColumnName="Venue" />
@@ -399,6 +576,7 @@
           <EntitySetMapping Name="AspNetUsers">
             <EntityTypeMapping TypeName="GigHubModel.AspNetUser">
               <MappingFragment StoreEntitySet="AspNetUsers">
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
                 <ScalarProperty Name="LockoutEnabled" ColumnName="LockoutEnabled" />
@@ -422,6 +600,24 @@
               <ScalarProperty Name="Id" ColumnName="RoleId" />
             </EndProperty>
           </AssociationSetMapping>
+          <EntitySetMapping Name="Attendances">
+            <EntityTypeMapping TypeName="GigHubModel.Attendance">
+              <MappingFragment StoreEntitySet="Attendances">
+                <ScalarProperty Name="AttendeeId" ColumnName="AttendeeId" />
+                <ScalarProperty Name="GigId" ColumnName="GigId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="follows">
+            <EntityTypeMapping TypeName="GigHubModel.follow">
+              <MappingFragment StoreEntitySet="follow">
+                <ScalarProperty Name="ArtistId" ColumnName="ArtistId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

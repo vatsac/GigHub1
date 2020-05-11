@@ -21,6 +21,9 @@ namespace GigHub.Models
             this.AspNetUserLogins = new HashSet<AspNetUserLogin>();
             this.Gigs = new HashSet<Gig>();
             this.AspNetRoles = new HashSet<AspNetRole>();
+            this.Attendances = new HashSet<Attendance>();
+            this.follows = new HashSet<follow>();
+            this.follows1 = new HashSet<follow>();
         }
     
         public string Id { get; set; }
@@ -35,6 +38,7 @@ namespace GigHub.Models
         public bool LockoutEnabled { get; set; }
         public int AccessFailedCount { get; set; }
         public string UserName { get; set; }
+        public string Name { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AspNetUserClaim> AspNetUserClaims { get; set; }
@@ -44,5 +48,11 @@ namespace GigHub.Models
         public virtual ICollection<Gig> Gigs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AspNetRole> AspNetRoles { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Attendance> Attendances { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<follow> follows { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<follow> follows1 { get; set; }
     }
 }

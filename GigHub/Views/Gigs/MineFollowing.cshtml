@@ -1,0 +1,29 @@
+﻿@model IEnumerable<GigHub.Models.follow>
+
+@{
+    ViewBag.Title = "MineFollowing";
+}
+
+<h1>Artist I'm following</h1>
+
+
+<table class="table">
+    <tr>
+   
+        <th>
+            Artist I'm following
+        </th>
+        
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+       
+        <td>
+            @Html.DisplayFor(modelItem => item.AspNetUser.Name)
+        </td>
+        
+    </tr>
+}
+
+</table>
