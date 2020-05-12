@@ -3,10 +3,10 @@ using Microsoft.AspNet.Identity;
 using System;
 using System.Linq;
 using System.Web.Http;
-using System.Data.Entity;
 
 namespace GigHub.Controllers.Api
 {
+    [Authorize]
     public class GigsController : ApiController
     {
         private DbEntities _context;
@@ -18,23 +18,23 @@ namespace GigHub.Controllers.Api
         public IHttpActionResult Cancel(int id)
         {
             var userId = User.Identity.GetUserId();
-            var gig = _context.Gigs.Single(g => g.ID == id && g.Artist_Id == userId );
-            if (gig.IsCanceled==true)
+            var gig = _context.Gigs.Single(g => g.ID == id && g.Artist_Id == userId);
+            if (gig.IsCanceled == true)
                 return NotFound();
             gig.IsCanceled = true;
             Notification notification = new Notification
             {
                 DateTime = DateTime.Now,
-                Type=Convert.ToInt32(NotificationType.GigCanceled),
-                Gig_Id=gig.ID
+                Type = Convert.ToInt32(NotificationType.GigCanceled),
+                Gig_Id = gig.ID
 
 
             };
             _context.Notifications.Add(notification);
             _context.SaveChanges();
             int Notificationid = (from record in _context.Notifications
-                           orderby record.Id descending
-                           select record.Id).First();
+                                  orderby record.Id descending
+                                  select record.Id).First();
             var attendeeid = (from s in _context.Attendances
                               where s.GigId == gig.ID
                               select s).ToList();
@@ -42,8 +42,8 @@ namespace GigHub.Controllers.Api
             {
                 UserNotification userNotification = new UserNotification
                 {
-                    UserId= item.AttendeeId,
-                    NotificationId=Notificationid,
+                    UserId = item.AttendeeId,
+                    NotificationId = Notificationid,
 
 
 
@@ -52,7 +52,7 @@ namespace GigHub.Controllers.Api
             }
             _context.SaveChanges();
 
-            
+
 
 
             return Ok();
