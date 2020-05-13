@@ -218,7 +218,7 @@ namespace GigHub.Controllers
             using (DbEntities _context = new DbEntities())
             {
                 var userid = User.Identity.GetUserId();
-                var gigs = _context.follows.Include(f => f.AspNetUser1)
+                var gigs = _context.follows.Include(f => f.AspNetUser)
                     .Where(f => f.UserId == userid)
                     .ToList();
                 return View(gigs);
