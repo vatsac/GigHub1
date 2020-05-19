@@ -88,6 +88,11 @@ namespace GigHub.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
+        [HttpPost]
+        public ActionResult Search(HomeViewModel viewModel)
+        {
+            return RedirectToAction("Index", "Home",new { query=viewModel.SearchTerm});
+        }
         [Authorize]
         public ActionResult Edit(int id)
         {
