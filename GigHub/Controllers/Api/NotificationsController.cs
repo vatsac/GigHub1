@@ -53,6 +53,21 @@ namespace GigHub.Controllers.Api
             }
 
         }
+        [HttpPost]
+        public IHttpActionResult MarkAsRead()
+        {
+            using(DbEntities _context=new DbEntities())
+            {
+                var userId = User.Identity.GetUserId();
+                var notifications = _context.UserNotifications
+                    .Where(un => un.UserId == userId && !un.IsRead)
+                    .ToList();
+                notifications.ForEach(un => un.Read());
+                _context.SaveChanges();
+                return Ok();
+            }
+        }
+
 
     }
 }

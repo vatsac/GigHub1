@@ -18,6 +18,10 @@ namespace GigHub.Models
         public string UserId { get; set; }
         public int NotificationId { get; set; }
         public bool IsRead { get; set; }
+        public void Read()
+        {
+            IsRead = true;
+        }
     
         public virtual AspNetUser AspNetUser { get; set; }
         public virtual Notification Notification { get; set; }
